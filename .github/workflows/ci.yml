@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Backend
+        run: cd backend && npm ci
+      - name: Prisma Check
+        run: cd backend && npx prisma validate
+      - name: Lint Backend
+        run: cd backend && npm run lint
+      - name: Build Backend
+        run: cd backend && npm run build
+      - name: Test Backend
+        run: cd backend && npm test
+      - name: Install Frontend
+        run: cd frontend && npm ci
+      - name: Lint Frontend
+        run: cd frontend && npm run lint
+      - name: Build Frontend
+        run: cd frontend && npm run build
+      - name: Test Frontend
+        run: cd frontend && npm test

@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { list, create, update, remove, dashboard, exportCsv } from '../controllers/transaction.controller';
+import { authenticate, authorize } from '../middleware/auth';
+const router = Router();
+router.use(authenticate);
+router.get('/dashboard', dashboard);
+router.get('/export', exportCsv);
+router.get('/', list);
+router.post('/', authorize('ADMIN', 'ACCOUNTANT'), create);
+router.put('/:id', authorize('ADMIN', 'ACCOUNTANT'), update);
+router.delete('/:id', authorize('ADMIN', 'ACCOUNTANT'), remove);
+export default router;

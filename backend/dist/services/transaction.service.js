@@ -1,0 +1,55 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.exportCSV = exports.getDashboardData = exports.removeTransaction = exports.listTransactions = void 0;
+exports.addTransaction = addTransaction;
+exports.editTransaction = editTransaction;
+const repo = __importStar(require("../repositories/transaction.repository"));
+const zod_1 = require("zod");
+const TransactionSchema = zod_1.z.object({ title: zod_1.z.string().min(1), amount: zod_1.z.number().positive(), type: zod_1.z.enum(['INCOME', 'EXPENSE']), category: zod_1.z.string().min(1) });
+const listTransactions = (orgId, page = 1, limit = 10, type) => repo.getTransactions(orgId, page, limit, type);
+exports.listTransactions = listTransactions;
+async function addTransaction(orgId, body) {
+    return repo.createTransaction(orgId, TransactionSchema.parse(body));
+}
+async function editTransaction(id, orgId, body) {
+    return repo.updateTransaction(id, orgId, TransactionSchema.partial().parse(body));
+}
+const removeTransaction = (id, orgId) => repo.deleteTransaction(id, orgId);
+exports.removeTransaction = removeTransaction;
+const getDashboardData = (orgId) => repo.getDashboard(orgId);
+exports.getDashboardData = getDashboardData;
+const exportCSV = (orgId) => repo.getAllTransactionsForExport(orgId);
+exports.exportCSV = exportCSV;
