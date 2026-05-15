@@ -2,8 +2,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { clearAccessToken, getAccessToken, setAccessToken } from './auth';
 import { Profile } from './types';
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
+const baseURL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 const api = axios.create({ baseURL, withCredentials: true });
 const refreshClient = axios.create({ baseURL, withCredentials: true });
 
