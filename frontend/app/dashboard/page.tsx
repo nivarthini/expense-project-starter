@@ -20,18 +20,25 @@ export default function DashboardPage() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (getAccessToken()) {
-      setIsAuthenticated(true);
-      return;
-    }
-    restoreSession()
-      .then(() => {
+    const checkAuth = async () => {
+      try {
+        if (getAccessToken()) {
+          setIsAuthenticated(true);
+          return;
+        }
+
+        await restoreSession();
         setIsAuthenticated(true);
+
         queryClient.invalidateQueries({ queryKey: ['transactions'] });
         queryClient.invalidateQueries({ queryKey: ['dashboard'] });
         queryClient.invalidateQueries({ queryKey: ['profile'] });
-      })
-      .catch(() => router.replace('/login'));
+      } catch {
+        router.replace('/login');
+      }
+    };
+
+    checkAuth();
   }, [queryClient, router]);
 
   const transactionQuery = useQuery({
