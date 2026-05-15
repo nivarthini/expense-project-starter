@@ -35,7 +35,7 @@ export default function RegisterPage() {
       const errorResponse = err as AxiosError<{ error?: string }>;
       const apiMessage = errorResponse.response?.data?.error;
       const networkMessage = errorResponse.request
-        ? 'Cannot reach the API server. Make sure the backend is running on http://localhost:5000.'
+        ? 'Cannot reach the API server. Please try again later.'
         : undefined;
 
       setError(apiMessage || networkMessage || 'Registration failed');
