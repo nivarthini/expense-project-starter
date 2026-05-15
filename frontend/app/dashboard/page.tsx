@@ -15,13 +15,24 @@ export default function DashboardPage() {
   const [type, setType] = useState<'ALL' | TransactionType>('ALL');
   const [form, setForm] = useState({ title: '', amount: '', type: 'INCOME' as TransactionType, category: '' });
   const [formError, setFormError] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(getAccessToken()));
   const router = useRouter();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (getAccessToken()) return;
-    restoreSession().catch(() => router.replace('/login'));
-  }, [router]);
+    if (getAccessToken()) {
+      setIsAuthenticated(true);
+      return;
+    }
+    restoreSession()
+      .then(() => {
+        setIsAuthenticated(true);
+        queryClient.invalidateQueries({ queryKey: ['transactions'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+        queryClient.invalidateQueries({ queryKey: ['profile'] });
+      })
+      .catch(() => router.replace('/login'));
+  }, [queryClient, router]);
 
   const transactionQuery = useQuery({
     queryKey: ['transactions', page, type],
@@ -31,6 +42,7 @@ export default function DashboardPage() {
       const response = await api.get<PaginatedTransactions>(`/transactions?${params.toString()}`);
       return response.data;
     },
+    enabled: isAuthenticated,
   });
 
   const dashboardQuery = useQuery({
@@ -39,11 +51,13 @@ export default function DashboardPage() {
       const response = await api.get<DashboardItem[]>('/transactions/dashboard');
       return response.data;
     },
+    enabled: isAuthenticated,
   });
 
   const profileQuery = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile,
+    enabled: isAuthenticated,
   });
 
   const totals = useMemo(() => {

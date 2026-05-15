@@ -33,7 +33,12 @@ export default function RegisterPage() {
       router.push('/dashboard');
     } catch (err) {
       const errorResponse = err as AxiosError<{ error?: string }>;
-      setError(errorResponse.response?.data?.error || 'Registration failed');
+      const apiMessage = errorResponse.response?.data?.error;
+      const networkMessage = errorResponse.request
+        ? 'Cannot reach the API server. Make sure the backend is running on http://localhost:5000.'
+        : undefined;
+
+      setError(apiMessage || networkMessage || 'Registration failed');
     } finally {
       setIsSubmitting(false);
     }
