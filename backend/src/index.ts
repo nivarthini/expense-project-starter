@@ -13,7 +13,10 @@ import { logger } from './utils/logger';
 const app = express();
 app.use(helmet());
 app.use(cors({
-  origin: "https://expense-project-starter-lodcik352-snivarthini-5228s-projects.vercel.app",
+  origin: [
+    "http://localhost:3000",
+    "https://expense-project-starter-lodcik352-snivarthini-5228s-projects.vercel.app"
+  ],
   credentials: true
 }));
 app.use(express.json());
