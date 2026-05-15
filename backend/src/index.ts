@@ -15,7 +15,7 @@ app.use(helmet());
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://expense-project-starter-lodcik352-snivarthini-5228s-projects.vercel.app"
+    "https://expense-project-starter.vercel.app"
   ],
   credentials: true
 }));
